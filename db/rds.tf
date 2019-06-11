@@ -8,6 +8,17 @@ locals {
   dbport = 5432
 }
 
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config {
+    bucket = "vt-child-tf"
+    key = "vpc/terraform.tfstate"
+    region = "us-east-1"
+    encrypt = true
+    dynamodb_table = "my-lock-table"
+  }
+}
+
 module "db" {
   source = "terraform-aws-modules/rds/aws"
   version = "1.28.0"
@@ -25,11 +36,11 @@ module "db" {
   port     = "${local.dbport}"
 
   vpc_security_group_ids = [
-    "${var.vpc_security_group_id}"
+    "${data.terraform_remote_state.vpc.pg_security_group_id}"
   ]
   publicly_accessible = true
 
-  db_subnet_group_name = "${var.db_subnet_group_name}"
+  db_subnet_group_name = "${data.terraform_remote_state.vpc.db_subnet_group_name}"
   family = "postgres11"
   deletion_protection = false
 

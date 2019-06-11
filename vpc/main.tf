@@ -2,11 +2,14 @@ terraform {
   backend "s3" {}
 }
 
-locals {
-  region = "us-east-1"
-  vpc_name = "std-vpc"
+variable "region" {
+  type = "string"
+}
+
+variable "vpc_name" {
+  type = "string"
 }
 
 provider "aws" {
-  region  = "${local.region}"
+  region  = "${var.region}"
 }

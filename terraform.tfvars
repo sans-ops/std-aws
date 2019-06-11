@@ -12,3 +12,8 @@ terragrunt = {
 
   terraform {}
 }
+
+vpc_name = "std-vpc"
+region = "us-east-1"
+#db_subnet_group_name = "std-vpc"
+#pg_security_group_id = "sg-02aab15bc165fceee"

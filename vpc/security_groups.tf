@@ -87,3 +87,7 @@ pg_security_group=${aws_security_group.pg_sg.id}
 
 END
 }
+
+output "pg_security_group_id" {
+  value = "${aws_security_group.pg_sg.id}"
+}

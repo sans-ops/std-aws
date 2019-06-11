@@ -2,12 +2,12 @@ module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
   version = "1.66.0"
 
-  name = "${local.vpc_name}"
+  name = "${var.vpc_name}"
   cidr = "10.100.0.0/16"
 
   azs = [
-    "${local.region}a",
-    "${local.region}b",
+    "${var.region}a",
+    "${var.region}b",
   ]
   public_subnets = [
     "10.100.0.0/22",
@@ -38,4 +38,8 @@ database_subnets=${join(",", module.vpc.database_subnets)}
 database_subnet_group=${module.vpc.database_subnet_group}
 
 END
+}
+
+output "db_subnet_group_name" {
+  value = "${module.vpc.database_subnet_group}"
 }
