@@ -70,10 +70,13 @@ dbpass = ${random_id.dbpass.hex}
 dbhost = ${module.db.this_db_instance_address}
 dbport = ${local.dbport}
 
-database_url = postgres://${local.dbuser}:${random_id.dbpass.hex}@${module.db.this_db_instance_address}/${local.dbname}
-
-psql = PGHOST=${module.db.this_db_instance_address} PGUSER=${local.dbuser} PGPASSWORD=${random_id.dbpass.hex} PGDATABASE=${local.dbname} PGPORT=${local.dbport} psql
-
-
 END
+}
+
+output "database_url" {
+  value = "postgres://${local.dbuser}:${random_id.dbpass.hex}@${module.db.this_db_instance_address}/${local.dbname}"
+}
+
+output "psql_cmd" {
+  value = "PGHOST=${module.db.this_db_instance_address} PGUSER=${local.dbuser} PGPASSWORD=${random_id.dbpass.hex} PGDATABASE=${local.dbname} PGPORT=${local.dbport} psql"
 }
