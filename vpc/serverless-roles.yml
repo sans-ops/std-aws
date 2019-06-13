@@ -34,7 +34,3 @@ resource "aws_iam_role_policy_attachment" "serverless_developer" {
 output "serverless_developer_role" {
   value = "${aws_iam_role.serverless_developer.arn}"
 }
-
-
-################################################################################
-# Serverless execution role

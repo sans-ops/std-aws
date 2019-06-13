@@ -29,15 +29,16 @@ module "vpc" {
   }
 }
 
-output "vpc" {
-  value =<<END
+outpput "vpc_id" {
+  value = "${module.vpc.vpc_id}"
+}
 
-vpc=${module.vpc.vpc_id}
-public_subnets=${join(",", module.vpc.public_subnets)}
-database_subnets=${join(",", module.vpc.database_subnets)}
-database_subnet_group=${module.vpc.database_subnet_group}
+output "public_subnets" {
+  value = "${join(",", module.vpc.public_subnets)}"
+}
 
-END
+output "database_subnets" {
+  value = "${join(",", module.vpc.database_subnets)}"
 }
 
 output "db_subnet_group_name" {

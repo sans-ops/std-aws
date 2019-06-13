@@ -79,13 +79,8 @@ resource "aws_security_group" "pg_sg" {
 ################################################################################
 # outputs
 
-output "security_groups" {
-  value =<<END
-
-web_security_group=${aws_security_group.web_sg.id}
-pg_security_group=${aws_security_group.pg_sg.id}
-
-END
+output "web_security_group_id" {
+  value = "${aws_security_group.web_sg.id}"
 }
 
 output "pg_security_group_id" {
