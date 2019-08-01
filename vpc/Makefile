@@ -1,10 +1,15 @@
-tf = terragrunt
+tf = terraform
+vars =
 
 init:
 	$(tf) init
 
-plan: init
-	$(tf) $@
+create update: init
+	$(tf) apply --auto-approve $(vars)
 
-apply destroy: init
-	$(tf) $@ --auto-approve
+delete:
+	$(tf) destroy --auto-approve $(vars)
+
+plan:
+	$(tf) plan $(vars)
+
