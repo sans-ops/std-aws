@@ -105,6 +105,7 @@ resource "postgresql_database" "db" {
 # set up permissions
 # https://aws.amazon.com/blogs/database/managing-postgresql-users-and-roles/
 # https://dba.stackexchange.com/questions/17790/created-user-can-access-all-databases-in-postgresql-without-any-grants
+# https://blog.dbrhino.com/locking-down-permissions-in-postgresql-and-redshift.html
 
 resource "null_resource" "db_setup" {
   provisioner "local-exec" {
@@ -139,6 +140,8 @@ resource "null_resource" "db_setup_defaults" {
     command = <<END
 psql --command="
 REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
+REVOKE ALL ON SCHEMA public FROM public;
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM public;
 
 ---- ro role
 GRANT CONNECT ON DATABASE \"${local.db_name}\" TO \"${local.db_ro_role}\";

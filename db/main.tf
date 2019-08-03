@@ -115,6 +115,7 @@ resource "null_resource" "db_setup" {
 psql --command="
   REVOKE ALL ON DATABASE ${element(local.setup_dbs, count.index)} FROM public;
   REVOKE ALL ON SCHEMA public FROM public;
+  REVOKE ALL ON ALL TABLES IN SCHEMA public FROM public;
   GRANT ALL ON SCHEMA public TO ${local.db_user};
 "
 END
