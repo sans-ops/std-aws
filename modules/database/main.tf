@@ -112,7 +112,7 @@ resource "null_resource" "db_setup" {
     command = <<END
 psql --command="
 ALTER SCHEMA public OWNER TO \"${local.db_user}\";
-REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
+--REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
 "
 END
 
@@ -138,6 +138,8 @@ resource "null_resource" "db_setup_defaults" {
 
     command = <<END
 psql --command="
+REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
+
 ---- ro role
 GRANT CONNECT ON DATABASE \"${local.db_name}\" TO \"${local.db_ro_role}\";
 GRANT USAGE ON SCHEMA public TO \"${local.db_ro_role}\";
