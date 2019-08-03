@@ -1,10 +1,7 @@
-tf = terragrunt
+init plan create:
+	$(MAKE) -C vpc $@
+	$(MAKE) -C db $@
 
-init:
-	$(tf) init
-
-plan: init
-	$(tf) $@
-
-apply destroy: init
-	$(tf) $@ --auto-approve
+delete:
+	-$(MAKE) -C db $@
+	-$(MAKE) -C vpc $@
