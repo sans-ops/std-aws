@@ -99,18 +99,23 @@ module "db" {
 # set up template1
 # https://stackoverflow.com/questions/45394458/how-to-apply-sql-scripts-on-rds-with-terraform
 # https://wiki.postgresql.org/wiki/Shared_Database_Hosting#template1
+locals {
+  setup_dbs = [
+    "postgres",
+    "template1",
+    "${local.db_name}",
+  ]
+}
 resource "null_resource" "db_setup" {
+  count = length(local.setup_dbs)
+
   provisioner "local-exec" {
 
     command = <<END
 psql --command="
-  REVOKE ALL ON DATABASE template1 FROM public;
-  REVOKE CONNECT ON DATABASE template1 FROM public;
+  REVOKE ALL ON DATABASE ${element(local.setup_dbs, count.index)} FROM public;
   REVOKE ALL ON SCHEMA public FROM public;
   GRANT ALL ON SCHEMA public TO ${local.db_user};
-
-  REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
-  REVOKE CONNECT ON DATABASE \"${local.db_name}\" FROM public;
 "
 END
 
@@ -119,11 +124,11 @@ END
       PGPORT = "${local.db_port}"
       PGUSER = "${local.db_user}"
       PGPASSWORD = "${local.db_pass}"
-      PGDATABASE = "template1"
+      PGDATABASE = element(local.setup_dbs, count.index)
     }
   }
 
   depends_on = [
-    "module.db"
+    "module.db",
   ]
 }

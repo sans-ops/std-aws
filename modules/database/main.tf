@@ -144,19 +144,19 @@ REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
 GRANT CONNECT ON DATABASE \"${local.db_name}\" TO \"${local.db_ro_role}\";
 GRANT USAGE ON SCHEMA public TO \"${local.db_ro_role}\";
 
-ALTER DEFAULT PRIVILEGES FOR ROLE \"${local.db_ro_role}\"
+ALTER DEFAULT PRIVILEGES
 GRANT SELECT ON TABLES TO \"${local.db_ro_role}\";
 
-ALTER DEFAULT PRIVILEGES FOR ROLE \"${local.db_ro_role}\"
+ALTER DEFAULT PRIVILEGES
 GRANT SELECT ON SEQUENCES TO \"${local.db_ro_role}\";
 
 --ALTER DEFAULT PRIVILEGES FOR ROLE \"${local.db_ro_role}\"
 --GRANT EXECUTE ON FUNCTIONS TO \"${local.db_ro_role}\";
 
-ALTER DEFAULT PRIVILEGES FOR ROLE \"${local.db_ro_role}\"
+ALTER DEFAULT PRIVILEGES
 GRANT USAGE ON TYPES TO \"${local.db_ro_role}\";
 
-ALTER DEFAULT PRIVILEGES FOR ROLE \"${local.db_ro_role}\"
+ALTER DEFAULT PRIVILEGES
 GRANT USAGE ON SCHEMAS TO \"${local.db_ro_role}\";
 
 ---- rw role
@@ -185,8 +185,6 @@ END
       PGPORT = "${var.db_port}"
       PGUSER = "${local.db_user}"
       PGPASSWORD = "${local.db_pass}"
-      #PGUSER = "${data.aws_ssm_parameter.sls-db-admin-user.value}"
-      #PGPASSWORD = "${data.aws_ssm_parameter.sls-db-admin-pass.value}"
       PGDATABASE = "${local.db_name}"
     }
   }
