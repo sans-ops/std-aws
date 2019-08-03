@@ -33,21 +33,22 @@ resource "random_string" "dbpass" {
 }
 
 locals {
-  db_identifier = "sls"
-  db_name = "slsdb"
+  rds_identifier = "${var.rds_instance_identifier}"
+  db_name = "${var.rds_instance_identifier}db"
   db_user = "upg${random_string.dbuser.result}"
   db_pass = "${random_string.dbpass.result}"
   db_port = 5432
   db_version = "11.4"
   db_family = "postgres11"
   instance_class = "db.t2.micro"
+  repo = "std-aws"
 }
 
 module "db" {
   source = "terraform-aws-modules/rds/aws"
   version = "~> v2.0"
 
-  identifier = "${local.db_identifier}"
+  identifier = "${local.rds_identifier}"
 
   engine = "postgres"
   engine_version    = "${local.db_version}"
@@ -59,10 +60,10 @@ module "db" {
   password = "${local.db_pass}"
   port     = "${local.db_port}"
 
-  vpc_security_group_ids = "${split(",", data.aws_ssm_parameter.sls-pg-sg-id.value)}"
+  vpc_security_group_ids = "${split(",", data.aws_ssm_parameter.pg-sg-id.value)}"
   publicly_accessible = true
 
-  db_subnet_group_name = "${data.aws_ssm_parameter.sls-db-subnet-group-name.value}"
+  db_subnet_group_name = "${data.aws_ssm_parameter.db-subnet-group-name.value}"
   family = "${local.db_family}"
   deletion_protection = false
 
@@ -91,7 +92,8 @@ module "db" {
 
   tags = {
     Terraform = true
-    Repo = "std-aws"
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
   }
 }
 

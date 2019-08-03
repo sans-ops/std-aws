@@ -3,7 +3,7 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "vpc_name" {
+variable "stack_name" {
   type = string
-  description = "VPC name"
+  description = "Name of this stack"
 }

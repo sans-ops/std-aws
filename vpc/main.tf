@@ -15,6 +15,14 @@ provider "aws" {
 }
 
 ################################################################################
+locals {
+  vpc_name = "${var.stack_name}-vpc"
+  lambdas_sg_name = "${local.vpc_name}-lambdas-sg"
+  pg_sg_name = "${local.vpc_name}-pg-sg"
+  repo = "std-aws"
+}
+
+################################################################################
 # My IP
 data "http" "ip" {
   url = "https://ifconfig.co/"
@@ -23,8 +31,8 @@ data "http" "ip" {
 #################################################################################
 # Tag stuff so we can see it in the resource group
 resource "aws_resourcegroups_group" "tf" {
-  name = "std-aws-rg"
-  description = "std-aws resources"
+  name = "${local.repo}-${var.stack_name}-rg"
+  description = "${local.repo} resources for stack ${var.stack_name}"
   resource_query {
     query = <<END
 {
@@ -33,9 +41,15 @@ resource "aws_resourcegroups_group" "tf" {
   ],
   "TagFilters": [
     {
+      "Key": "Stack",
+      "Values": [
+        "${var.stack_name}"
+      ]
+    },
+    {
       "Key": "Repo",
       "Values": [
-        "std-aws"
+        "${local.repo}"
       ]
     }
   ]
@@ -50,7 +64,7 @@ module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
   version = "~> v2.0"
 
-  name = "${var.vpc_name}"
+  name = "${local.vpc_name}"
   cidr = "10.100.0.0/16"
 
   azs = [
@@ -74,14 +88,15 @@ module "vpc" {
 
   tags = {
     Terraform = "true"
-    Repo = "std-aws"
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
   }
 }
 
 ################################################################################
 # Lambda functions
-resource "aws_security_group" "lambda-sg" {
-  name = "lambda-sg"
+resource "aws_security_group" "lambdas-sg" {
+  name = "${local.lambdas_sg_name}"
   description = "Add to Lambda for whitelisting by pg-sg"
   vpc_id = "${module.vpc.vpc_id}"
 
@@ -94,15 +109,16 @@ resource "aws_security_group" "lambda-sg" {
 
   tags = {
     Terraform = "true"
-    Repo = "std-aws"
-    Name = "lambda-sg"
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+    Name = "${local.lambdas_sg_name}"
   }
 }
 
 ################################################################################
 # Postgres databases
 resource "aws_security_group" "pg-sg" {
-  name = "pg-sg"
+  name = "${local.pg_sg_name}"
   description = "inbound connections to Postgres databases"
   vpc_id = "${module.vpc.vpc_id}"
 
@@ -111,7 +127,7 @@ resource "aws_security_group" "pg-sg" {
     to_port      = 5432
     protocol     = "tcp"
     security_groups = [
-      "${aws_security_group.lambda-sg.id}"
+      "${aws_security_group.lambdas-sg.id}"
     ]
   }
 
@@ -135,7 +151,8 @@ resource "aws_security_group" "pg-sg" {
 
   tags = {
     Terraform = "true"
-    Repo = "std-aws"
-    Name = "pg-sg"
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+    Name = "${local.pg_sg_name}"
   }
 }

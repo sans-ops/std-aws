@@ -18,26 +18,50 @@ output "psql_cmd" {
   value = "PGHOST=${module.db.this_db_instance_address} PGUSER=${local.db_user} PGPASSWORD=${local.db_pass} PGDATABASE=${local.db_name} PGPORT=${local.db_port} psql"
 }
 
-resource "aws_ssm_parameter" "sls-db-host" {
-  name = "sls-db-host"
+resource "aws_ssm_parameter" "db-host" {
+  name = "${var.stack_name}-db-host"
   type = "String"
   value = "${module.db.this_db_instance_address}"
+
+  tags = {
+    Terraform = true
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+  }
 }
 
-resource "aws_ssm_parameter" "sls-db-port" {
-  name = "sls-db-port"
+resource "aws_ssm_parameter" "db-port" {
+  name = "${var.stack_name}-db-port"
   type = "String"
   value = "${local.db_port}"
+
+  tags = {
+    Terraform = true
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+  }
 }
 
-resource "aws_ssm_parameter" "sls-db-admin-user" {
-  name = "sls-db-admin-user"
+resource "aws_ssm_parameter" "db-admin-user" {
+  name = "${var.stack_name}-db-admin-user"
   type = "String"
   value = "${local.db_user}"
+
+  tags = {
+    Terraform = true
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+  }
 }
 
-resource "aws_ssm_parameter" "sls-db-admin-pass" {
-  name = "sls-db-admin-pass"
+resource "aws_ssm_parameter" "db-admin-pass" {
+  name = "${var.stack_name}-db-admin-pass"
   type = "String"
   value = "${local.db_pass}"
+
+  tags = {
+    Terraform = true
+    Stack = "${var.stack_name}"
+    Repo = "${local.repo}"
+  }
 }

@@ -1,7 +1,7 @@
-data "aws_ssm_parameter" "sls-pg-sg-id" {
-  name = "sls-pg-sg-id"
+data "aws_ssm_parameter" "pg-sg-id" {
+  name = "${var.stack_name}-pg-sg-id"
 }
 
-data "aws_ssm_parameter" "sls-db-subnet-group-name" {
-  name = "sls-db-subnet-group-name"
+data "aws_ssm_parameter" "db-subnet-group-name" {
+  name = "${var.stack_name}-db-subnet-group-name"
 }
