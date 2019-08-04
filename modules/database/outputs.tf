@@ -1,23 +1,37 @@
-output "db-user" {
-  value = "${local.db_user}"
-}
-
-output "db-pass" {
-  value = "${local.db_pass}"
-}
-
 output "db-name" {
   value = "${local.db_name}"
 }
 
-output "psql" {
-  value = "PGHOST=${var.db_host} PGPORT=${var.db_port} PGUSER=${local.db_user} PGPASSWORD=${local.db_pass} PGDATABASE=${local.db_name} psql"
+# rw role
+output "db-rw-user" {
+  value = "${local.db_rw_user}"
 }
 
-output "rou" {
-  value = "PGHOST=${var.db_host} PGPORT=${var.db_port} PGUSER=${local.db_name}-rou PGPASSWORD=${local.db_pass} PGDATABASE=${local.db_name} psql"
+output "db-rw-pass" {
+  value = "${local.db_rw_pass}"
 }
 
-output "database-url" {
-  value = "postgres://${local.db_user}:${local.db_pass}@${var.db_host}:${var.db_port}/${local.db_name}"
+output "rw-psql" {
+  value = "PGHOST=${var.db_host} PGPORT=${var.db_port} PGUSER=${local.db_rw_user} PGPASSWORD=${local.db_rw_pass} PGDATABASE=${local.db_name} psql"
+}
+
+output "rw-database-url" {
+  value = "postgres://${local.db_rw_user}:${local.db_rw_pass}@${var.db_host}:${var.db_port}/${local.db_name}"
+}
+
+# ro role
+output "db-ro-user" {
+  value = "${local.db_ro_user}"
+}
+
+output "db-ro-pass" {
+  value = "${local.db_ro_pass}"
+}
+
+output "ro-psql" {
+  value = "PGHOST=${var.db_host} PGPORT=${var.db_port} PGUSER=${local.db_ro_user} PGPASSWORD=${local.db_ro_pass} PGDATABASE=${local.db_name} psql"
+}
+
+output "ro-database-url" {
+  value = "postgres://${local.db_ro_user}:${local.db_ro_pass}@${var.db_host}:${var.db_port}/${local.db_name}"
 }

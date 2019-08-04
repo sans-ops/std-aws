@@ -66,8 +66,8 @@ output "lambda_sg_id" {
   value = "${aws_security_group.lambdas-sg.id}"
 }
 
-resource "aws_ssm_parameter" "lambda-sg-id" {
-  name = "${var.stack_name}-lambda-sg-id"
+resource "aws_ssm_parameter" "lambdas-sg-id" {
+  name = "${var.stack_name}-lambdas-sg-id"
   type = "String"
   value = "${aws_security_group.lambdas-sg.id}"
 

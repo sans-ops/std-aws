@@ -1,6 +1,6 @@
 ################################################################################
 # credentials
-resource "random_string" "dbuser" {
+resource "random_string" "rw_user" {
   length = 14
   special = false
   number = false
@@ -8,7 +8,23 @@ resource "random_string" "dbuser" {
   lower = true
 }
 
-resource "random_string" "dbpass" {
+resource "random_string" "rw_pass" {
+  length = 128
+  special = false
+  number = true
+  upper = true
+  lower = true
+}
+
+resource "random_string" "ro_user" {
+  length = 14
+  special = false
+  number = false
+  upper = false
+  lower = true
+}
+
+resource "random_string" "ro_pass" {
   length = 128
   special = false
   number = true
@@ -27,8 +43,10 @@ resource "random_string" "dbsuffix" {
 locals {
   db_host = "${data.aws_ssm_parameter.sls-db-host.value}"
   db_port = "${data.aws_ssm_parameter.sls-db-port.value}"
-  db_user = "urw${random_string.dbuser.result}"
-  db_pass = "${random_string.dbpass.result}"
+  db_rw_user = "urw${random_string.rw_user.result}"
+  db_rw_pass = "${random_string.rw_pass.result}"
+  db_ro_user = "uro${random_string.ro_user.result}"
+  db_ro_pass = "${random_string.ro_pass.result}"
   db_name = "${var.db_name}-${random_string.dbsuffix.result}-db"
 }
 
@@ -54,9 +72,9 @@ resource "postgresql_role" "ro" {
 
 # the primary database user, who is also the owner of the
 # database we just created.
-resource "postgresql_role" "dbuser" {
-  name = "${local.db_user}"
-  password = "${local.db_pass}"
+resource "postgresql_role" "rw_user" {
+  name = "${local.db_rw_user}"
+  password = "${local.db_rw_pass}"
   login = true
   inherit = true
   skip_reassign_owned = true
@@ -70,9 +88,9 @@ resource "postgresql_role" "dbuser" {
   ]
 }
 
-resource "postgresql_role" "rou" {
-  name = "${local.db_name}-rou"
-  password = "${local.db_pass}"
+resource "postgresql_role" "ro_user" {
+  name = "${local.db_ro_user}"
+  password = "${local.db_ro_pass}"
   login = true
   inherit = true
   skip_reassign_owned = true
@@ -84,7 +102,6 @@ resource "postgresql_role" "rou" {
   ]
 }
 
-
 ################################################################################
 # create the database
 resource "postgresql_database" "db" {
@@ -93,11 +110,11 @@ resource "postgresql_database" "db" {
   lc_collate = "DEFAULT"
   encoding = "DEFAULT"
   lc_ctype = "DEFAULT"
-  owner = "${local.db_user}"
+  owner = "${local.db_rw_user}"
   allow_connections = true
 
   depends_on = [
-    "postgresql_role.dbuser"
+    "postgresql_role.rw_user"
   ]
 }
 
@@ -112,7 +129,7 @@ resource "null_resource" "db_setup" {
 
     command = <<END
 psql --command="
-ALTER SCHEMA public OWNER TO \"${local.db_user}\";
+ALTER SCHEMA public OWNER TO \"${local.db_rw_user}\";
 --REVOKE ALL ON DATABASE \"${local.db_name}\" FROM public;
 "
 END
@@ -129,7 +146,7 @@ END
   depends_on = [
     "postgresql_role.rw",
     "postgresql_role.ro",
-    "postgresql_role.dbuser",
+    "postgresql_role.rw_user",
     "postgresql_database.db",
   ]
 }
@@ -186,8 +203,8 @@ END
     environment = {
       PGHOST = "${var.db_host}"
       PGPORT = "${var.db_port}"
-      PGUSER = "${local.db_user}"
-      PGPASSWORD = "${local.db_pass}"
+      PGUSER = "${local.db_rw_user}"
+      PGPASSWORD = "${local.db_rw_pass}"
       PGDATABASE = "${local.db_name}"
     }
   }
@@ -195,7 +212,7 @@ END
   depends_on = [
     "postgresql_role.rw",
     "postgresql_role.ro",
-    "postgresql_role.dbuser",
+    "postgresql_role.rw_user",
     "postgresql_database.db",
     "null_resource.db_setup",
   ]

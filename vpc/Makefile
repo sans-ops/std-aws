@@ -10,6 +10,5 @@ create update: init
 delete:
 	$(tf) destroy --auto-approve $(vars)
 
-plan:
-	$(tf) plan $(vars)
-
+plan output:
+	$(tf) $@ $(vars)
