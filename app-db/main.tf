@@ -28,10 +28,13 @@ provider "postgresql" {
 
 ################################################################################
 module "db-foo" {
-  source = "../modules/database"
-  db_host = "${data.aws_ssm_parameter.sls-db-host.value}"
-  db_port = "${data.aws_ssm_parameter.sls-db-port.value}"
-  db_name = "foo"
+  #source = "../modules/terraform-postgresql-database"
+  source = "github.com/infrastructure-as-code/terraform-postgresql-database"
+  pg_host = "${data.aws_ssm_parameter.sls-db-host.value}"
+  pg_port = "${data.aws_ssm_parameter.sls-db-port.value}"
+  pg_user = "${data.aws_ssm_parameter.sls-db-admin-user.value}"
+  pg_password = "${data.aws_ssm_parameter.sls-db-admin-pass.value}"
+  database_name = "foo"
 
   providers = {
     postgresql = "postgresql.rdspg"
@@ -56,10 +59,13 @@ output "db-foo-ro-database-url" {
 
 ################################################################################
 module "db-bar" {
-  source = "../modules/database"
-  db_host = "${data.aws_ssm_parameter.sls-db-host.value}"
-  db_port = "${data.aws_ssm_parameter.sls-db-port.value}"
-  db_name = "bar"
+  #source = "../modules/database"
+  source = "github.com/infrastructure-as-code/terraform-postgresql-database"
+  pg_host = "${data.aws_ssm_parameter.sls-db-host.value}"
+  pg_port = "${data.aws_ssm_parameter.sls-db-port.value}"
+  pg_user = "${data.aws_ssm_parameter.sls-db-admin-user.value}"
+  pg_password = "${data.aws_ssm_parameter.sls-db-admin-pass.value}"
+  database_name = "bar"
 
   providers = {
     postgresql = "postgresql.rdspg"

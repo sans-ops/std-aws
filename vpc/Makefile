@@ -1,5 +1,6 @@
+include ../config.mk
 tf = terraform
-vars =
+vars ?=
 
 init:
 	$(tf) init
